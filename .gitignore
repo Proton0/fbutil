@@ -5,3 +5,4 @@ img2fb/*.jpg
 img2fb/*.jpeg
 fb2img/*.bin
 fb2img/*.png
+.idea/*

@@ -1,10 +1,11 @@
 import subprocess
 import re
-import sys
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 def run_command(command, as_root=False):
@@ -12,17 +13,13 @@ def run_command(command, as_root=False):
         command = ["adb", "shell", "su", "-c", " ".join(command)]
     else:
         command = ["adb", "shell"] + command
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    result = subprocess.run(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
     logging.debug(f"Running command: {' '.join(command)}")
     logging.debug(f"Command output: {result.stdout}")
     logging.debug(f"Command error: {result.stderr}")
     return result
-
-
-def check_root_access():
-    command = ["id", "-u"]
-    result = run_command(command, as_root=True)
-    return result.returncode == 0 and result.stdout.strip() == "0"
 
 
 def get_framebuffer_id_and_driver():
@@ -50,6 +47,27 @@ def get_framebuffer_id_and_driver():
     return framebuffer_id, framebuffer_driver
 
 
+def getFBDevice(framebuffer_id=0):
+    # [ -e /dev/graphics/fb{framebuffer_id} ] && echo 1 || echo 0
+    command = run_command(
+        [
+            "[",
+            "-e",
+            f"/dev/graphics/fb{framebuffer_id}",
+            "]",
+            "&&",
+            "echo 1",
+            "||",
+            "echo 0",
+        ],
+        True,
+    )
+    if command.stdout.strip() == "1":
+        return f"/dev/graphics/fb{framebuffer_id}"
+    else:
+        return f"/dev/fb{framebuffer_id}"
+
+
 def get_framebuffer_info(framebuffer_id):
     fb_dir = f"/sys/class/graphics/fb{framebuffer_id}/"
 
@@ -67,12 +85,14 @@ def get_framebuffer_info(framebuffer_id):
 
         framebuffer_info[info_file] = result.stdout.strip()
 
+    framebuffer_info["fb_location"] = getFBDevice(framebuffer_id)
+
     return framebuffer_info
 
 
 def parse_virtual_size(virtual_size_str):
     # Attempt to handle different formats
-    virtual_size_str = virtual_size_str.replace(',', ' ').strip()
+    virtual_size_str = virtual_size_str.replace(",", " ").strip()
     dimensions = virtual_size_str.split()
 
     if len(dimensions) == 2:
@@ -113,18 +133,28 @@ def parse_and_display_info(framebuffer_info, physical_size):
         virtual_size_str = framebuffer_info.get("virtual_size", "0 0")
         stride = int(framebuffer_info.get("stride", 0))
         mode = framebuffer_info.get("mode", "Unknown")
+        fb_location = framebuffer_info.get("fb_location", "Unknown")
 
         width, height = parse_virtual_size(virtual_size_str)
 
         if bits_per_pixel == 32:
             pixel_format = "ARGB8888"
+        elif bits_per_pixel == 24:
+            pixel_format = "RGB888"
         elif bits_per_pixel == 16:
             pixel_format = "RGB565"
+        elif bits_per_pixel == 15:
+            pixel_format = "ARGB1555"  # 1-bit alpha
+        elif bits_per_pixel == 12:
+            pixel_format = "RGB444"  # 4 bits per channel
+        elif bits_per_pixel == 8:
+            pixel_format = "RGB332"  # 3 bits red, 3 bits green, 2 bits blue
         else:
             pixel_format = "Unknown"
 
         logging.info(f"Framebuffer Width: {width}")
         logging.info(f"Framebuffer Height: {height}")
+        logging.info(f"Framebuffer Location: {fb_location}")
         logging.info(f"Bits per Pixel: {bits_per_pixel}")
         logging.info(f"Stride: {stride}")
         logging.info(f"Mode: {mode}")
@@ -138,14 +168,6 @@ def parse_and_display_info(framebuffer_info, physical_size):
 
 
 def main():
-    if not check_root_access():
-        logging.warning("Not running as root. Attempting to switch to root...")
-        command = ["adb", "shell", "su", "-c", f"python3 {sys.argv[0]}"]
-        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if result.returncode != 0:
-            logging.error(f"Error gaining root access: {result.stderr}")
-            return
-        return
 
     framebuffer_id, framebuffer_driver = get_framebuffer_id_and_driver()
     if framebuffer_id is None:
@@ -156,9 +178,11 @@ def main():
 
     framebuffer_info = get_framebuffer_info(framebuffer_id)
     if framebuffer_info:
-        logging.info(f"Framebuffer info: {framebuffer_info}")
+        logging.debug(f"Framebuffer info: {framebuffer_info}")
         physical_size = get_physical_size()
         parse_and_display_info(framebuffer_info, physical_size)
+    else:
+        logging.error("Error getting framebuffer info")
 
 
 if __name__ == "__main__":

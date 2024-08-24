@@ -40,7 +40,7 @@ Run the script
 > Run `fbinfo/main.py` for the required details
 ```bash
   cd img2fb
-  python3 main.py <image> <output framebuffer> --format <optional format>
+  python3 main.py <image> <output framebuffer> --format <optional format> <width> <height>
 ```
 
 Push the framebuffer to your Device
@@ -48,8 +48,9 @@ Push the framebuffer to your Device
   adb push framebuffer.bin /sdcard/framebuffer.bin
 ```
 
-> [!NOTE]  
-> If you dont see the image then try to run `enable_surface_update.sh` or `stop` using a shell and try to put it on a `while true` loop
+> [!IMPORTANT]  
+> If you cant see the image, try changing the format or giving `--force-alpha` but if you cant see anything then try to run `enable_surface_update.sh` or simply `stop` on a shell
+
 Run this script on your device
 ```bash
   cat /sdcard/framebuffer > <Framebuffer Location>

@@ -1,7 +1,8 @@
 
-# fbinfo
+# fbfill
 
-A simple python command that gets the framebuffer  information using adb 
+A simple command to fill the framebuffer with a solid color
+
 ## Run Locally
 
 Clone the project
@@ -25,6 +26,6 @@ Install dependencies
 Run the tool
 
 ```bash
-  cd fbinfo
-  python3 main.pyn
+  cd fbfill
+  python3 main.py --color <HEX code> --framebuffer <output> --format <framebuffer format> --width <width> --height <height>
 ```

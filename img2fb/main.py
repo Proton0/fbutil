@@ -1,7 +1,8 @@
 import argparse
 from PIL import Image
 import numpy as np
-
+# python3 main.py test.jpeg framebuffer.bin --format ARGB8888 736 460
+#  python3 main.py test.jpeg framebuffer.bin --format BGRA8888 736 460
 
 def png_to_framebuffer(
     png_path, framebuffer_path, width, height, format="RGB565", force_alpha=False
@@ -27,9 +28,7 @@ def png_to_framebuffer(
     elif format == "ARGB8888":
         img = img.convert("RGBA")
         arr = np.array(img)
-        fb_arr = np.zeros((height, width * 4), dtype=np.uint8)
-
-        # Populate framebuffer array
+        fb_arr = np.zeros((arr.shape[0], arr.shape[1] * 4), dtype=np.uint8)
         fb_arr[:, 0::4] = arr[:, :, 3] if not force_alpha else 255  # Alpha
         fb_arr[:, 1::4] = arr[:, :, 0]  # Red
         fb_arr[:, 2::4] = arr[:, :, 1]  # Green

@@ -55,3 +55,9 @@ Run this script on your device
 ```bash
   cat /sdcard/framebuffer > <Framebuffer Location>
 ```
+
+> [!IMPORTANT]  
+> If the image seems VERY VERY distorted (like its just white) then try to use `dd` (this fixed my issues for me)
+```bash
+  dd if=/sdcard/framebuffer of=<Framebuffer Location>
+```

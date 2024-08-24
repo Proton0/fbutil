@@ -1,6 +1,5 @@
 import argparse
 import struct
-import os
 import numpy as np
 
 
@@ -57,7 +56,7 @@ def fill_framebuffer(hex_color, width, height, framebuffer, format):
         fb.write(fb_data)
 
     print(
-        f"Created framebuffer {framebuffer} with color {hex_color} (width: {width}, height: {height}) in format {format}"
+        f"Created framebuffer {framebuffer} with hex color {hex_color} (width: {width}, height: {height}) in format {format}"
     )
 
 
@@ -65,7 +64,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Creates a Android Framebuffer with a solid color"
     )
-    parser.add_argument("--color", required=True, help="Hex color code (e.g., #FF5733)")
+    parser.add_argument("--color", type=str, required=True, help="Hex color code (e.g., #FF5733)")
     parser.add_argument(
         "--width", type=int, required=True, help="Screen width in pixels"
     )

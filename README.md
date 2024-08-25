@@ -4,7 +4,7 @@
 
 fbutil is a collection of Python scripts designed for manipulating the Android Framebuffer.
 
-[Modified Framebuffer](https://github.com/proton0/fbutil/blob/main/preview.png)
+[Modified Framebuffer](https://github.com/proton0/fbutil/blob/main/preview.jpg)
 ## Installation
 
 To get started, clone the repository and install the dependencies:

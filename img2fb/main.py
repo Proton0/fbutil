@@ -3,9 +3,26 @@ from PIL import Image
 import numpy as np
 
 
+def calculate_stride(width, format):
+    bytes_per_pixel = {
+        "RGB565": 2,
+        "ARGB8888": 4,
+        "ABGR8888": 4,
+        "BGRA8888": 4,
+        "RGBA8888": 4,
+    }
+    return width * bytes_per_pixel[format]
+
+
 def png_to_framebuffer(
-    png_path, framebuffer_path, width, height, format="RGB565", force_alpha=False
+    png_path, framebuffer_path, width, height, stride=None, format="RGB565", force_alpha=False
 ):
+    if stride is None:
+        print("WARNING: No stride is provided. The stride will be calculated automatically but it may not be "
+              "accurate. Please run fbinfo to get the correct stride.")
+        stride = calculate_stride(width, format)
+    print(f"Calculated stride: {stride}")
+
     # Load the image
     img = Image.open(png_path)
     img = img.resize((width, height))  # Resize image to the specified dimensions
@@ -14,7 +31,7 @@ def png_to_framebuffer(
     if format == "RGB565":
         img = img.convert("RGB")
         arr = np.array(img)
-        fb_arr = np.zeros((height, width), dtype=np.uint16)
+        fb_arr = np.zeros((height, stride // 2), dtype=np.uint16)
         for y in range(height):
             for x in range(width):
                 r = (arr[y, x, 0] >> 3) & 0x1F
@@ -27,7 +44,7 @@ def png_to_framebuffer(
     elif format == "ARGB8888":
         img = img.convert("RGBA")
         arr = np.array(img)
-        fb_arr = np.zeros((arr.shape[0], arr.shape[1] * 4), dtype=np.uint8)
+        fb_arr = np.zeros((height, stride), dtype=np.uint8)
         fb_arr[:, 0::4] = arr[:, :, 3] if not force_alpha else 255  # Alpha
         fb_arr[:, 1::4] = arr[:, :, 0]  # Red
         fb_arr[:, 2::4] = arr[:, :, 1]  # Green
@@ -36,7 +53,7 @@ def png_to_framebuffer(
     elif format == "ABGR8888":
         img = img.convert("RGBA")
         arr = np.array(img)
-        fb_arr = np.zeros((height, width * 4), dtype=np.uint8)
+        fb_arr = np.zeros((height, stride), dtype=np.uint8)
         fb_arr[:, 0::4] = arr[:, :, 3] if not force_alpha else 255  # Alpha
         fb_arr[:, 1::4] = arr[:, :, 2]  # Blue
         fb_arr[:, 2::4] = arr[:, :, 1]  # Green
@@ -45,7 +62,7 @@ def png_to_framebuffer(
     elif format == "BGRA8888":
         img = img.convert("RGBA")
         arr = np.array(img)
-        fb_arr = np.zeros((height, width * 4), dtype=np.uint8)
+        fb_arr = np.zeros((height, stride), dtype=np.uint8)
         fb_arr[:, 0::4] = arr[:, :, 2]  # Blue
         fb_arr[:, 1::4] = arr[:, :, 1]  # Green
         fb_arr[:, 2::4] = arr[:, :, 0]  # Red
@@ -54,7 +71,7 @@ def png_to_framebuffer(
     elif format == "RGBA8888":
         img = img.convert("RGBA")
         arr = np.array(img)
-        fb_arr = np.zeros((height, width * 4), dtype=np.uint8)
+        fb_arr = np.zeros((height, stride), dtype=np.uint8)
         fb_arr = arr.reshape((height, width * 4))  # Reshape to match the output format
 
     else:
@@ -76,6 +93,9 @@ def main():
     parser.add_argument("width", type=int, help="Width of the screen.")
     parser.add_argument("height", type=int, help="Height of the screen.")
     parser.add_argument(
+        "--stride", type=int, help="Stride of the framebuffer (optional)."
+    )
+    parser.add_argument(
         "--format",
         type=str,
         default="RGB565",
@@ -96,6 +116,7 @@ def main():
         args.framebuffer_path,
         args.width,
         args.height,
+        args.stride,
         args.format,
         args.force_alpha,
     )

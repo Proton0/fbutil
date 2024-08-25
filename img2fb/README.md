@@ -27,5 +27,5 @@ Install dependencies
 Run the script
 ```bash
   cd img2fb
-  python3 main.py <image> <output framebuffer> --format <optional format> <width> <height>
+  python3 main.py <image> <output framebuffer> --format <optional format> <width> <height> --stride <optional stride>
 ```

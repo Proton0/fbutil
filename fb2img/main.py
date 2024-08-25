@@ -2,7 +2,10 @@ import argparse
 from PIL import Image
 import numpy as np
 
-def framebuffer_to_png(framebuffer_path, png_path, width, height, format="RGB565", stride=None):
+
+def framebuffer_to_png(
+    framebuffer_path, png_path, width, height, format="RGB565", stride=None
+):
     # Determine the number of bytes per pixel based on the format
     if format in ["RGB565"]:
         bytes_per_pixel = 2
@@ -52,13 +55,18 @@ def framebuffer_to_png(framebuffer_path, png_path, width, height, format="RGB565
         img_arr = img_arr  # Already in RGBA format
 
     # Convert to Image and save as PNG
-    img = Image.fromarray(img_arr, 'RGBA' if bytes_per_pixel == 4 else 'RGB')
+    img = Image.fromarray(img_arr, "RGBA" if bytes_per_pixel == 4 else "RGB")
     img.save(png_path)
     print(f"PNG image saved to: {png_path}")
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Convert an Android framebuffer to a PNG image")
-    parser.add_argument("framebuffer_path", type=str, help="Path to the input framebuffer binary file.")
+    parser = argparse.ArgumentParser(
+        description="Convert an Android framebuffer to a PNG image"
+    )
+    parser.add_argument(
+        "framebuffer_path", type=str, help="Path to the input framebuffer binary file."
+    )
     parser.add_argument("png_path", type=str, help="Path to the output PNG image.")
     parser.add_argument("width", type=int, help="Width of the screen.")
     parser.add_argument("height", type=int, help="Height of the screen.")
@@ -83,8 +91,9 @@ def main():
         args.width,
         args.height,
         args.format,
-        args.stride
+        args.stride,
     )
+
 
 if __name__ == "__main__":
     main()

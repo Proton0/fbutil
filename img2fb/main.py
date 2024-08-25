@@ -15,11 +15,19 @@ def calculate_stride(width, format):
 
 
 def png_to_framebuffer(
-    png_path, framebuffer_path, width, height, stride=None, format="RGB565", force_alpha=False
+    png_path,
+    framebuffer_path,
+    width,
+    height,
+    stride=None,
+    format="RGB565",
+    force_alpha=False,
 ):
     if stride is None:
-        print("WARNING: No stride is provided. The stride will be calculated automatically but it may not be "
-              "accurate. Please run fbinfo to get the correct stride.")
+        print(
+            "WARNING: No stride is provided. The stride will be calculated automatically but it may not be "
+            "accurate. Please run fbinfo to get the correct stride."
+        )
         stride = calculate_stride(width, format)
     print(f"Calculated stride: {stride}")
 

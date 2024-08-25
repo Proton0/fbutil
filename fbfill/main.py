@@ -2,6 +2,7 @@ import argparse
 import struct
 import numpy as np
 
+
 def calculate_stride(width, format):
     bytes_per_pixel = {
         "RGB565": 2,
@@ -11,6 +12,7 @@ def calculate_stride(width, format):
         "RGBA8888": 4,
     }
     return width * bytes_per_pixel[format]
+
 
 def fill_framebuffer(hex_color, width, height, stride, framebuffer, format):
     # Convert hex color to RGB
@@ -68,6 +70,7 @@ def fill_framebuffer(hex_color, width, height, stride, framebuffer, format):
         f"Created framebuffer {framebuffer} with hex color {hex_color} (width: {width}, height: {height}, stride: {stride}) in format {format}"
     )
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Creates an Android Framebuffer with a solid color"
@@ -82,7 +85,9 @@ def main():
         "--height", type=int, required=True, help="Screen height in pixels"
     )
     parser.add_argument(
-        "--stride", type=int, help="Framebuffer stride in bytes (calculated if not provided)"
+        "--stride",
+        type=int,
+        help="Framebuffer stride in bytes (calculated if not provided)",
     )
     parser.add_argument(
         "--framebuffer",
@@ -101,7 +106,10 @@ def main():
     if args.stride is None:
         args.stride = calculate_stride(args.width, args.format)
 
-    fill_framebuffer(args.color, args.width, args.height, args.stride, args.framebuffer, args.format)
+    fill_framebuffer(
+        args.color, args.width, args.height, args.stride, args.framebuffer, args.format
+    )
+
 
 if __name__ == "__main__":
     main()

@@ -1,18 +1,25 @@
 import subprocess
 import re
 import logging
+import argparse
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+adb_mode = True
+
 
 def run_command(command, as_root=False):
-    if as_root:
-        command = ["adb", "shell", "su", "-c", " ".join(command)]
+    if adb_mode:
+        if as_root:
+            command = ["adb", "shell", "su", "-c", " ".join(command)]
+        else:
+            command = ["adb", "shell"] + command
     else:
-        command = ["adb", "shell"] + command
+        if as_root:
+            command = ["su", "-c", " ".join(command)]
     result = subprocess.run(
         command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
     )
@@ -184,7 +191,18 @@ def parse_and_display_info(framebuffer_info, physical_size):
 
 
 def main():
-
+    global adb_mode
+    parser = argparse.ArgumentParser(description="Gets the device's framebuffer information")
+    parser.add_argument(
+        "-l",
+        "--local",
+        type=bool,
+        default=False,
+        help="Use local device instead of adb",
+    )
+    args = parser.parse_args()
+    if args.local:
+        adb_mode = False
     framebuffer_id, framebuffer_driver = get_framebuffer_id_and_driver()
     if framebuffer_id is None:
         return

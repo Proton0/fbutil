@@ -17,7 +17,7 @@ To get started, clone the repository and install the dependencies:
 ## Uploading the framebuffer
 
 > [!IMPORTANT]
-> This script requires `adb` and root access to the device.
+> This script requires root access to the device.
 
 Push the `util` folder to your device
 ```bash
@@ -28,6 +28,10 @@ Retrieve your framebuffer's details by running fbinfo:
 ```bash
   python3 fbinfo/main.py
 ````
+If you are using Termux then you can put `--local` to make fbinfo not use adb:
+```bash
+  python3 fbinfo/main.py --local
+```
 
 > [!NOTE]
 > If you encounter an error or the Framebuffer Location is empty, try running the `create_framebuffer.sh` script:

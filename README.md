@@ -1,36 +1,55 @@
-
 # fbutil
 
-A bunch of python scripts used to manipulate the Android Framebuffer
+**DISCLAIMER: Proton0 is not liable for any damage to your device resulting from the use of this software.**
 
-## Run Locally
+fbutil is a collection of Python scripts designed for manipulating the Android Framebuffer.
 
-> [!IMPORTANT]  
-> Make sure to install ADB and to install Magisk (or any other root providers)
+[Modified Framebuffer](https://github.com/proton0/fbutil/blob/main/preview.png)
+## Installation
 
-Clone the project
-
+To get started, clone the repository and install the dependencies:
 ```bash
   git clone https://github.com/proton0/fbutil
+  cd fbutil
+  pip3 install -r requirements.txt
 ```
 
-In order to "push" the modified framebuffer to the device, you need to have ADB installed and the device must be connected to the computer.
+## Uploading the framebuffer
 
-> [!IMPORTANT]  
-> If you cant see the image, try to run `enable_surface_update.sh` or simply `stop` on a shell (this is due to SurfaceFlinger and Zygote doing weird stuff with the framebuffer)
+> [!IMPORTANT]
+> This script requires `adb` and root access to the device.
 
-Run this script on your device
+Push the `util` folder to your device
 ```bash
-  cat /sdcard/framebuffer > <Framebuffer Location>
+  adb push util /sdcard/util
 ```
 
-> [!IMPORTANT]  
-> If the image seems VERY VERY distorted (like its just white) then try to use `dd` (this fixed my issues for me)
+Retrieve your framebuffer's details by running fbinfo:
 ```bash
-  dd if=/sdcard/framebuffer of=<Framebuffer Location>
+  python3 fbinfo/main.py
+````
+
+> [!NOTE]
+> If you encounter an error or the Framebuffer Location is empty, try running the `create_framebuffer.sh` script:
+```bash
+  adb shell su -c 'sh /sdcard/util/create_framebuffer.sh'
 ```
 
-## Authors
+If the image is not visible, try running `enable_surface_update.sh` or simply execute `stop` in a shell.
 
-- [@proton0](https://www.github.com/proton0)
+Execute the following command on your device to apply the framebuffer:
+```bash
+  su
+  cat <modified framebuffer location> > <framebuffer location from fbinfo>
+```
 
+> [!NOTE]
+> If the image appears distorted (e.g., displaying as solid white), consider using the dd command, which may resolve the issue:
+
+```bash
+  su
+  dd if=<modified framebuffer location> of=<framebuffer location from fbinfo>
+```
+
+## Author
+ - [Proton0](https://github.com/proton0)

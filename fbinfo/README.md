@@ -26,5 +26,5 @@ Run the tool
 
 ```bash
   cd fbinfo
-  python3 main.pyn
+  python3 main.py
 ```

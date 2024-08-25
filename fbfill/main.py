@@ -64,7 +64,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Creates a Android Framebuffer with a solid color"
     )
-    parser.add_argument("--color", type=str, required=True, help="Hex color code (e.g., #FF5733)")
+    parser.add_argument(
+        "--color", type=str, required=True, help="Hex color code (e.g., #FF5733)"
+    )
     parser.add_argument(
         "--width", type=int, required=True, help="Screen width in pixels"
     )

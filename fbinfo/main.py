@@ -65,7 +65,23 @@ def getFBDevice(framebuffer_id=0):
     if command.stdout.strip() == "1":
         return f"/dev/graphics/fb{framebuffer_id}"
     else:
-        return f"/dev/fb{framebuffer_id}"
+        command = run_command(
+            [
+                "[",
+                "-e",
+                f"/dev/fb{framebuffer_id}",
+                "]",
+                "&&",
+                "echo 1",
+                "||",
+                "echo 0",
+            ],
+            True,
+        )
+        if command.stdout.strip() == "1":
+            return f"/dev/fb{framebuffer_id}"
+        else:
+            return "Unknown"
 
 
 def get_framebuffer_info(framebuffer_id):

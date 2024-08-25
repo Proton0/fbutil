@@ -1,8 +1,7 @@
 import argparse
 from PIL import Image
 import numpy as np
-# python3 main.py test.jpeg framebuffer.bin --format ARGB8888 736 460
-#  python3 main.py test.jpeg framebuffer.bin --format BGRA8888 736 460
+
 
 def png_to_framebuffer(
     png_path, framebuffer_path, width, height, format="RGB565", force_alpha=False

@@ -36,7 +36,11 @@ def text_to_framebuffer(
     draw = ImageDraw.Draw(img)
 
     # Load the font
-    font = ImageFont.truetype(font_path, font_size) if font_path else ImageFont.load_default()
+    font = (
+        ImageFont.truetype(font_path, font_size)
+        if font_path
+        else ImageFont.load_default()
+    )
 
     # Draw the text on the image at the specified position
     draw.text((text_x, text_y), text, font=font, fill=(255, 255, 255, 255))
@@ -79,7 +83,9 @@ def text_to_framebuffer(
 
     elif format == "RGBA8888":
         fb_arr = np.zeros((height, stride), dtype=np.uint8)
-        fb_arr[:, 0:width * 4] = arr.reshape((height, width * 4))  # Flatten the array correctly
+        fb_arr[:, 0 : width * 4] = arr.reshape(
+            (height, width * 4)
+        )  # Flatten the array correctly
 
     else:
         raise ValueError(f"Unsupported framebuffer format: {format}")

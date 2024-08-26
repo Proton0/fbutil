@@ -103,7 +103,7 @@ def get_framebuffer_info(framebuffer_id):
         result = run_command(command, as_root=True)
 
         if result.returncode != 0:
-            logging.error(f"Error accessing {info_file}: {result.stderr}")
+            logging.error(f"Error accessing {info_file}: {result.stderr} (stdout: {result.stdout})")
             continue
 
         framebuffer_info[info_file] = result.stdout.strip()
@@ -192,7 +192,9 @@ def parse_and_display_info(framebuffer_info, physical_size):
 
 def main():
     global adb_mode
-    parser = argparse.ArgumentParser(description="Gets the device's framebuffer information")
+    parser = argparse.ArgumentParser(
+        description="Gets the device's framebuffer information"
+    )
     parser.add_argument(
         "-l",
         "--local",
